@@ -1,70 +1,84 @@
-###############################################################
-# script name	: cash_register.pl
-# description	: 
-# author		: Dai Nguyen-Van
-# email			: dainv1989@gmail.com
-# creation date	: 02/11/2013
-###############################################################
+﻿####################################################
+# script name   : cash_register.pl
+# description   : 
+# author        : Dai Nguyen-Van
+# email         : dainv1989@gmail.com
+# creation date : 05/11/2013
+####################################################
 #!/usr/bin/perl
 
 my %cash = (
-    0.01 => 'PENNY',
-    0.05 => 'NICKEL',
-    0.10 => 'DIME',
-    0.25 => 'QUARTER',
-    0.50 => 'HALF DOLLAR',
-    1.00 => 'ONE',
-    2.00 => 'TWO',
-    5.00 => 'FIVE',
-    10.00 => 'TEN',
-    20.00 => 'TWENTY',
-    50.00 => 'FIFTY',
-    100.00 => 'ONE HUNDRED');
-
+    0.01    => 'PENNY',
+    0.05    => 'NICKEL',
+    0.10    => 'DIME',
+    0.25    => 'QUARTER',
+    0.50    => 'HALF DOLLAR',
+    1.00    => 'ONE',
+    2.00    => 'TWO',
+    5.00    => 'FIVE',
+    10.00   => 'TEN',
+    20.00   => 'TWENTY',
+    50.00   => 'FIFTY',
+    100.00  => 'ONE HUNDRED'
+);
+# sort value of keys %cash table in descending order
 my @value = sort {$b <=> $a} (keys %cash);
 
-# open input file
-# read content
-# remove EOL character
+# open file in read-only mode
+# read content of input file
+# remove all end of line character (EOL)
 open (DATA, "<", $ARGV[0]) or die $!;
 @content = <DATA>;
 chomp(@content);
 
 foreach (@content)
 {
-    # check empty line
+    # if line is not empty
     if ($_ ne "")
     {
-        # remove all whitespace if any
+        # remove all whitepsace characters
         $_ =~ s/\s//g;
+
         my @money = split(";", $_);
-        my $charge = $money[1] - $money[0];
-        if($charge < 0)
+        # if there are two numbers in line
+        if($#money == 1)
         {
-            print "ERROR\n";
-        }
-        elsif($charge == 0)
-        {
-            print "ZERO\n";
-        }
-        else
-        {
-            my @result = ();
-            my $i = 0;
-            while($charge >= 0 && $i <= $#value)
+            # calculate the change
+            my $change = 0;
+            $change = sprintf("%0.2f", ($money[1] - $money[0])) + 0;
+
+            # if the change is less than zero
+            if($change < 0)
             {
-                if($charge >= $value[$i])
-                {
-                    push(@result, $cash{$value[$i]});
-                    $charge -= $value[$i];
-                }
-                else
-                {
-                    $i++;
-                }
+                print "ERROR\n";
             }
-            print join ",", @result;
-            print "\n";
+            # if the change is equal zero
+            elsif($change == 0)
+            {
+                print "ZERO\n";
+            }
+            # if the change is more than zero
+            else
+            {
+                my @result = ();
+                my $i = 0;
+
+                while($change > 0 && $i <= $#value)
+                {
+                    if($change >= $value[$i])
+                    {
+                        push(@result, $cash{$value[$i]});
+                        $change = sprintf("%0.2f", ($change - $value[$i]));
+                    }
+                    else
+                    {
+                        $i++;
+                    }
+                }
+                # print out result
+                print join ",",@result;
+                print "\n";
+            }
         }
     }
 }
