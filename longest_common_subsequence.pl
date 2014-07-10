@@ -23,3 +23,5 @@ foreach (<$input>)
     print "$_" if ($strings[1] =~ /$patern/);
 }
 close($input);
+
+# This solution is NOT work yet, waiting for update
